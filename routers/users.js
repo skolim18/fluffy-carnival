@@ -3,6 +3,7 @@ const User = require('../models/users');
 const config = require('../config');
 
 
+
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
@@ -14,21 +15,26 @@ function validatePassword(pass) {
     return validPassword;
 }
 
-router.post('/register', (req, res, next) => {
+router.post('/register', async (req, res, next) => {
     if (!req.body.email || !req.body.name || !req.body.surname || !req.body.password || !req.body.gender || !req.body.birthDate) {
-        res.status(401).send('Missing required data!')
+        res.status(401).send('Missing required data!');
+        return;
     }
     if (req.body.password.length < 8) {
-        res.status(401).send('Password too short')
+        res.status(401).send('Password too short');
+        return;
     }
     if (!validatePassword(req.body.password)) {
-        res.status(401).send('Invalid password')
+        res.status(401).send('Invalid password');
+        return;
     }
     if (!validateEmail(req.body.email)) {
-        res.status(401).send('Invalid email')
+        res.status(401).send('Invalid email');
+        return;
     }
-    if (User.findByEmail(req.body.email)) {
-        res.status(401).send('Email alredy taken')
+    if (await User.findByEmail(req.body.email)) {
+        res.status(401).send('Email alredy taken');
+        return;
     }
     let NewUser = new User({
         email: req.body.email,
