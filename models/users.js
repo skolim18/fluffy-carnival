@@ -41,6 +41,10 @@ const UserSchema = new Schema({
     guid: {
         type: String
     },
+    resetPasswordToken: {
+        type: String,
+        required: false
+    },
     isVerified: { 
         type: Boolean, 
         default: false 

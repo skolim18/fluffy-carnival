@@ -125,4 +125,50 @@ router.post('/authenticate', (req, res, next) => {
         })
 })
 
+function sendResetPasswordEmail(user) {
+    user.resetPasswordToken = uniqid();
+
+    const generatedURL = buildUrl('http://localhost:9090', {
+        path: 'reset',
+        queryParams: {
+            token: user.resetPasswordToken
+        }
+    });
+
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+        to: user.email,
+        from: 'activate@test.com',
+        subject: 'Reset link',
+        text: 'Click to reset your password',
+        html: `<a href="${generatedURL}">Click</a> to reset your password`
+    };
+    sgMail.send(msg);
+};
+
+
+router.post('/reset', (req, res, next) => {
+    User.findByEmail(req.body.email)
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+            }
+            
+            sendResetPasswordEmail(user);
+            res.status(200).json({ success: true, msg: "Reset mail sent" })
+    
+        });
+})
+
+router.put('/reset', (req, res, next) => {
+    User.findOne({ resetPasswordToken: req.query.token })
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+            }
+            user.password = req.body.password;
+            user.save();
+        })
+})
+
 module.exports = router;
