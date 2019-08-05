@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
+const passport = require('passport');
+const { Strategy, ExtractJwt } = require('passport-jwt');
+
 const bodyparser = require('body-parser');
 const UserRoutes = require('./routers/users');
 const User = require('./models/users');
@@ -8,8 +11,30 @@ const User = require('./models/users');
 
 const app = express();
 app.use(bodyparser.json());
-app.use(UserRoutes)
+app.use(passport.initialize());
 
+const opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+    secretOrKey: config.server.secret
+};
+
+const successHandler = (jwt_payload, done) => {
+    User.findById(jwt_payload.id)
+        .then(user => {
+            if (!user) {
+                done(null, false);
+                return;
+            }
+
+            done(null, user);
+        })
+}
+
+passport.use(new Strategy(opts, successHandler));
+
+app.use(UserRoutes);
+
+app.get('/secret', passport.authenticate('jwt', { session: false }), (req, res, next) => res.send('Secret hello'));
 
 mongoose
     .connect(config.database.url, config.database.options)

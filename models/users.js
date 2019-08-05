@@ -37,8 +37,24 @@ const UserSchema = new Schema({
     },
     favouriteMovie: {
         type: String
+    },
+    guid: {
+        type: String
+    },
+    isVerified: { 
+        type: Boolean, 
+        default: false 
     }
 })
+
+UserSchema.methods.comparePassword = function (password) {
+    return bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.encrypt = function () {
+    return bcrypt.hash(this.password, 12)
+        .then(hash => this.password = hash);
+}
 
 UserSchema.statics.findByEmail = function (email) {
     return this.findOne({ email: email });
