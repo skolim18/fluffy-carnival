@@ -4,27 +4,27 @@ const bcrypt = require('bcrypt');
 const UserSchema = new Schema({
     email: {
         type: String,
-        required: true
+        //required: true
     },
     name: {
         type: String,
-        required: true
+        //required: true
     },
     surname: {
         type: String,
-        required: true
+        //required: true
     },
     password: {
         type: String,
-        required: true
+        //required: true
     },
     gender: {
         type: String,
-        required: true
+        //required: true
     },
     birthDate: {
         type: Date,
-        required: true
+        //required: true
     },
     bio: {
         type: String
@@ -43,7 +43,7 @@ const UserSchema = new Schema({
     },
     resetPasswordToken: {
         type: String,
-        required: false
+        default: ""
     },
     isVerified: { 
         type: Boolean, 

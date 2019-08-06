@@ -5,7 +5,8 @@ const uniqid = require('uniqid');
 const buildUrl = require('build-url');
 const sgMail = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
-
+const passport = require('passport');
+const { secret } = require('../config/server');
 
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -31,7 +32,7 @@ function sendActivationEmail(user) {
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
         to: user.email,
-        from: 'test@test.com',
+        from: 'activate@test.com',
         subject: 'Activation link',
         text: 'Click to activate your account',
         html: `<a href="${generatedURL}">Click</a> to activate your account`
@@ -138,12 +139,13 @@ function sendResetPasswordEmail(user) {
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
         to: user.email,
-        from: 'activate@test.com',
+        from: 'reset@test.com',
         subject: 'Reset link',
         text: 'Click to reset your password',
         html: `<a href="${generatedURL}">Click</a> to reset your password`
     };
     sgMail.send(msg);
+
 };
 
 
@@ -155,6 +157,7 @@ router.post('/reset', (req, res, next) => {
             }
             
             sendResetPasswordEmail(user);
+            user.save();
             res.status(200).json({ success: true, msg: "Reset mail sent" })
     
         });
@@ -167,8 +170,34 @@ router.put('/reset', (req, res, next) => {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
             user.password = req.body.password;
-            user.save();
+
+            user.encrypt()
+            .then(() => {
+                user.save();
+                res.status(201).send("Password changed");
+            })
+            .catch(() => res.status(400).send("Error occurred"));
+                
         })
 })
+
+signToken = user => {
+    return jwt.sign({
+      iss: 'CodeWorkr',
+      sub: user.id,
+      iat: new Date().getTime(), // current time
+      exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
+    }, secret);
+  }
+
+router.post('/oauth/facebook', passport.authenticate('facebookToken', { session: false }), 
+    async (req, res, next) => {
+    // Generate token
+    const token = signToken(req.user);
+    res.cookie('access_token', token, {
+      httpOnly: true
+    });
+    res.status(200).json({ success: true });
+  })
 
 module.exports = router;
