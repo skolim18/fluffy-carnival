@@ -5,8 +5,6 @@ const uniqid = require('uniqid');
 const buildUrl = require('build-url');
 const sgMail = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
-const passport = require('passport');
-const { secret } = require('../config/server');
 
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -128,6 +126,8 @@ router.post('/authenticate', (req, res, next) => {
 
 function sendResetPasswordEmail(user) {
     user.resetPasswordToken = uniqid();
+    user.expirationTokenDate = Date.now();
+    user.expirationTokenDate = user.expirationTokenDate.getTime() + 5*60*1000;
 
     const generatedURL = buildUrl('http://localhost:9090', {
         path: 'reset',
@@ -148,6 +148,15 @@ function sendResetPasswordEmail(user) {
 
 };
 
+router.get('/reset', (req, res, next) => {
+    User.findOne({ resetPasswordToken: req.query.token })
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+            }
+            res.status(200).send("Please copy url and paste it to Postman");
+        })
+})
 
 router.post('/reset', (req, res, next) => {
     User.findByEmail(req.body.email)
@@ -158,8 +167,7 @@ router.post('/reset', (req, res, next) => {
             
             sendResetPasswordEmail(user);
             user.save();
-            res.status(200).json({ success: true, msg: "Reset mail sent" })
-    
+            res.status(200).json({ success: true, msg: "Reset mail sent" });
         });
 })
 
@@ -169,6 +177,12 @@ router.put('/reset', (req, res, next) => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
+
+            if (user.expirationTokenDate < Date.now()) {
+                res.status(400).json({ success: false, msg: "Token expired" });
+                return;
+            }
+
             user.password = req.body.password;
 
             user.encrypt()
@@ -180,24 +194,5 @@ router.put('/reset', (req, res, next) => {
                 
         })
 })
-
-signToken = user => {
-    return jwt.sign({
-      iss: 'CodeWorkr',
-      sub: user.id,
-      iat: new Date().getTime(), // current time
-      exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
-    }, secret);
-  }
-
-router.post('/oauth/facebook', passport.authenticate('facebookToken', { session: false }), 
-    async (req, res, next) => {
-    // Generate token
-    const token = signToken(req.user);
-    res.cookie('access_token', token, {
-      httpOnly: true
-    });
-    res.status(200).json({ success: true });
-  })
 
 module.exports = router;
