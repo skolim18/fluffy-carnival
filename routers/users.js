@@ -162,7 +162,7 @@ router.post('/reset', (req, res, next) => {
     User.findByEmail(req.body.email)
         .then(user => {
             if (!user) {
-                res.status(400).json({ success: false, msg: "User not found" });
+                res.status(400).json({ success: false, msg: "Reset mail sent" });
             }
             
             sendResetPasswordEmail(user);
