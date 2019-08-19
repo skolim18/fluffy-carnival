@@ -6,7 +6,9 @@ const { Strategy, ExtractJwt } = require('passport-jwt');
 
 const bodyparser = require('body-parser');
 const UserRoutes = require('./routers/users');
+const PostRoutes = require('./routers/posts');
 const User = require('./models/users');
+const Post = require('./models/posts');
 
 const app = express();
 app.use(bodyparser.json());
@@ -32,10 +34,22 @@ const successHandler = (jwt_payload, done) => {
 passport.use(new Strategy(opts, successHandler));
 
 app.use(UserRoutes);
+app.use(PostRoutes);
 
 app.get('/secret', passport.authenticate('jwt', { session: false }), (req, res, next) => res.send('Secret hello'));
 
 mongoose
     .connect(config.database.url, config.database.options)
     .then(() => app.listen(config.server.port))
+    .then(() =>
+    User.create( {
+        email: "admin@fluffyadmin.com",
+        isVerified: true,
+        password: "admin123",
+        role: "Admin",
+        name: "Admin",
+        surname: "Adminadmin",
+        gender: "other",
+        birthDate: 1970-01-01
+    }))
     .catch(err => console.log(err))    

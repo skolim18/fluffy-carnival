@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const UserSchema = new Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     name: {
         type: String,
@@ -20,6 +21,7 @@ const UserSchema = new Schema({
     },
     gender: {
         type: String,
+        enum: ["female", "male", "other"],
         required: true
     },
     birthDate: {
@@ -50,7 +52,12 @@ const UserSchema = new Schema({
     },
     isVerified: { 
         type: Boolean, 
-        default: false 
+        default: false
+    },
+    role: {
+        type: String,
+        enum: ["User", "Admin", "Moderator"],
+        default: "User"
     }
 })
 
