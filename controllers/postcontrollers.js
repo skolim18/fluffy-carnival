@@ -1,4 +1,5 @@
 const Post = require('../models/posts');
+const jwt = require('jsonwebtoken');
 
 exports.postAddNew = (req, res, next) => {
     if (!req.body.title || !req.body.description) {
@@ -8,7 +9,10 @@ exports.postAddNew = (req, res, next) => {
 
     let NewPost = new Post({
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        privacyLevel: req.body.privacyLevel,
+        publishDate: req.body.publishDate,
+        state: req.body.state
     });
 
     NewPost.save();
@@ -16,13 +20,16 @@ exports.postAddNew = (req, res, next) => {
 };
 
 exports.getFindPost = (req, res, next) => {
-    Post.findOne({ title: req.body.title})
+    Post.find({
+        $and: [{title: req.body.title}, {privacyLevel: req.body.privacyLevel}]
+        })
         .then (post => {
             if (!post) {
                 res.status(400).json({ success: false, msg: "Post not found" });
             }
 
             res.send(post);
+            return;
         });
     Post.findOne({ _id: req.body.id})
         .then (post => {
@@ -31,5 +38,6 @@ exports.getFindPost = (req, res, next) => {
             }
 
             res.send(post);
-        });   
+            return;
+        });    
 };

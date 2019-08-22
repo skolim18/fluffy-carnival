@@ -15,7 +15,7 @@ const PostSchema = new Schema({
     },
     privacyLevel: {
         type: String,
-        enum: ['public', 'friendsOnly'],
+        enum: ['public', 'friendsOnly', 'private'],
         default: 'public'
     },
     state: {
