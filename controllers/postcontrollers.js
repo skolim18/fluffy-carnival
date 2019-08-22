@@ -1,6 +1,6 @@
 const Post = require('../models/posts');
 
-exports.postAddNew = req, res, next) => {
+exports.postAddNew = (req, res, next) => {
     if (!req.body.title || !req.body.description) {
         res.status(401).send('Missing required data!');
         return;

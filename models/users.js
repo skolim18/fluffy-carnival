@@ -1,11 +1,26 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
+var validate = require('mongoose-validator');
+var validator = require('validator');
+
+var passwordValidator =  [
+validate({
+    validator: 'matches',
+    arguments: /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/,
+    message: 'Password not correct, required symbols not found'
+})
+]
 
 const UserSchema = new Schema({
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: true
+        //,
+    //    validate:
+    //        [validator.isEmail],
+    //        unique: true,
+    //        message: 'Email not correct',
+    //
     },
     name: {
         type: String,
@@ -17,7 +32,8 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate: passwordValidator
     },
     gender: {
         type: String,

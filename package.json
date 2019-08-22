@@ -19,11 +19,13 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.3.0-beta2",
     "mongoose": "^5.6.7",
+    "mongoose-validator": "^2.1.0",
     "nodemon": "^1.19.1",
     "passport": "^0.4.0",
     "passport-facebook-token": "^3.3.0",
     "passport-jwt": "^4.0.0",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "validator": "^11.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

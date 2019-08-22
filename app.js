@@ -45,7 +45,7 @@ mongoose
     User.create( {
         email: "admin@fluffyadmin.com",
         isVerified: true,
-        password: "admin123",
+        password: "Admin123!",
         role: "Admin",
         name: "Admin",
         surname: "Adminadmin",
