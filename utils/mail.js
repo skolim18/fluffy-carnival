@@ -3,11 +3,6 @@ const uniqid = require('uniqid');
 const buildUrl = require('build-url');
 const sgMail = require('@sendgrid/mail');
 
-exports.validateEmail = email => {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-};
-
 exports.validatePassword = pass => {
     var regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/;
     var validPassword = regExp.test(pass);

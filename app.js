@@ -52,4 +52,4 @@ mongoose
         gender: "other",
         birthDate: 1970-01-01
     }))
-    .catch(err => console.log(err))    
+    .catch(err => console.log(err));    

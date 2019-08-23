@@ -16,10 +16,6 @@ exports.postRegisterUser = async (req, res, next) => {
         res.status(401).send('Invalid password');
         return;
     }
-    if (!mailUtils.validateEmail(req.body.email)) {
-        res.status(401).send('Invalid email');
-        return;
-    }
     if (await User.findByEmail(req.body.email)) {
         res.status(401).send('Email alredy taken');
         return;
@@ -79,14 +75,18 @@ exports.postAuthenticateUser = (req, res, next) => {
                     if (result) {
                         const token = jwt.sign({ email: user.email, id: user._id }, config.server.secret, { expiresIn: 1000 });
                         res.json({
-                            success: true,
-                            token: `JWT ${token}`
+                            auth: true,
+                            token: `${token}`
                         });
                     } else {
-                        res.status(401).json({ success: false, msg: "Incorrect password" })
+                        res.status(401).json({ auth: false, token: null, msg: "Incorrect password" })
                     }
                 })
         })
+};
+
+exports.getLogoutUser = (req, res) => {
+    res.status(200).send({ auth: false, token: null });
 };
 
 exports.getResetPassword = (req, res, next) => {
@@ -135,3 +135,13 @@ exports.putResetPassword = (req, res, next) => {
                 
         })
 };
+
+exports.getFindCurrentUser = (req, res, next) => {
+    User.findById(req.id, { password: 0 }, function (err, user) {
+      if (err) return res.status(500).send("There was a problem finding the user.");
+      if (!user) return res.status(404).send("No user found.");
+      
+      res.status(200).send(user);
+    });
+    
+  };

@@ -1,4 +1,9 @@
 const { Schema, model } = require('mongoose');
+var validate = require('mongoose-validator');
+
+function arrayLimit(val) {
+    return val.length <= 10;
+  };
 
 const PostSchema = new Schema({
     title: {
@@ -22,7 +27,15 @@ const PostSchema = new Schema({
         type: String,
         enum: ['published', 'draft'],
         default: 'draft'
+    },
+    tags: {
+        type: [String],
+        validate: [arrayLimit, 'Tags limited to 10']
+    },
+    authorId: {
+        type: String,
+        required: true
     }
-});
+  });
 
 module.exports = model('Post', PostSchema);
