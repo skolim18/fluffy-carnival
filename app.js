@@ -51,6 +51,13 @@ mongoose
             surname: "Adminadmin",
             gender: "other",
             birthDate: 1970 - 01 - 01
-        }))
+
+        }).then((User) =>
+            User.encrypt()
+                .then(() => {
+                    User.save();
+                }))
+
+    )
 
     .catch(err => console.log(err));    
