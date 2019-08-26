@@ -1,9 +1,17 @@
+const mongoose = require('mongoose');
 const { Schema, model } = require('mongoose');
 var validate = require('mongoose-validator');
 
 function arrayLimit(val) {
     return val.length <= 10;
   };
+
+const ImageSchema = mongoose.Schema({
+    type: String,
+    data: Buffer
+    });
+
+mongoose.model('image', ImageSchema, 'image');
 
 const PostSchema = new Schema({
     title: {
@@ -35,7 +43,12 @@ const PostSchema = new Schema({
     authorId: {
         type: String,
         required: true
+    },
+    image: {
+        type: mongoose.Schema.Types.Object,
+        ref: 'image'
     }
+
   });
 
 module.exports = model('Post', PostSchema);

@@ -22,7 +22,7 @@ exports.sendActivationEmail = user => {
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
         to: user.email,
-        from: 'activate@test.com',
+        from: 'fluffycarnival@fluffy.com',
         subject: 'Activation link',
         text: 'Click to activate your account',
         html: `<a href="${generatedURL}">Click</a> to activate your account`
@@ -45,11 +45,40 @@ exports.sendResetPasswordEmail = user => {
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
         to: user.email,
-        from: 'reset@test.com',
+        from: 'fluffycarnival@fluffy.com',
         subject: 'Reset link',
         text: 'Click to reset your password',
         html: `<a href="${generatedURL}">Click</a> to reset your password`
     };
     sgMail.send(msg);
 
+};
+
+exports.sendInvitiationEmail = user => {
+    inviteToken = uniqid();
+    
+    const generatedURLaccept = buildUrl('http://localhost:9090', {
+        path: 'friends/accept',
+        queryParams: {
+            inviteToken: inviteToken
+        }
+    });
+
+    const generatedURLdecline= buildUrl('http://localhost:9090', {
+        path: 'friends/decline',
+        queryParams: {
+            inviteToken: inviteToken
+        }
+    });
+
+
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+        to: user.email,
+        from: 'fluffycarnival@fluffy.com',
+        subject: 'Friend request on Fluffy Carnival',
+        text: 'Click to accept invitiation',
+        html: `<a href="${generatedURLaccept}">Click</a> to accept invitiation. <a href="${generatedURLdecline}">Click</a> to decline invitiation. `
+    };
+    sgMail.send(msg);
 };

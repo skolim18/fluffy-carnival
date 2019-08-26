@@ -1,7 +1,16 @@
+const mongoose = require('mongoose');
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
-var validate = require('mongoose-validator');
-var validator = require('validator');
+const validate = require('mongoose-validator');
+const validator = require('validator');
+
+const FriendSchema = new Schema({
+    friendId: String,
+    status: String,
+    inviteToken: String
+    });
+
+mongoose.model('friend', FriendSchema, 'friends');
 
 const UserSchema = new Schema({
     email: {
@@ -62,6 +71,10 @@ const UserSchema = new Schema({
         type: String,
         enum: ["User", "Admin", "Moderator"],
         default: "User"
+    },
+    friends: {
+        type: [mongoose.Schema.Types.Object],
+        ref: 'friends'
     }
 })
 

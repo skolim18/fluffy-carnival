@@ -1,5 +1,7 @@
 const Post = require('../models/posts');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const filesUtils = require('../utils/files');
 
 exports.postAddNew = (req, res, next) => {
     if (!req.body.title || !req.body.description) {

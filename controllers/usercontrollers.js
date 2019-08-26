@@ -1,6 +1,7 @@
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
+const Post = require('../models/posts');
 const mailUtils = require('../utils/mail');
 
 exports.postRegisterUser = async (req, res, next) => {
@@ -141,7 +142,15 @@ exports.getFindCurrentUser = (req, res, next) => {
       if (err) return res.status(500).send("There was a problem finding the user.");
       if (!user) return res.status(404).send("No user found.");
       
-      res.status(200).send(user);
+
+    Post.find({authorId: req.id})
+        .then(post => {
+            if (!post) {
+                res.status(400).json({ success: false, msg: "Posts not found"});
+            }                
+        res.status(200).send({user: user, posts: post});   
+        });
+    
     });
     
   };

@@ -7,6 +7,7 @@ const { Strategy, ExtractJwt } = require('passport-jwt');
 const bodyparser = require('body-parser');
 const UserRoutes = require('./routers/users');
 const PostRoutes = require('./routers/posts');
+const FriendsRoutes = require('./routers/friends');
 const User = require('./models/users');
 const Post = require('./models/posts');
 
@@ -34,6 +35,7 @@ const successHandler = (jwt_payload, done) => {
 passport.use(new Strategy(opts, successHandler));
 
 app.use(UserRoutes);
+app.use(FriendsRoutes);
 app.use(PostRoutes);
 
 app.get('/secret', passport.authenticate('jwt', { session: false }), (req, res, next) => res.send('Secret hello'));
