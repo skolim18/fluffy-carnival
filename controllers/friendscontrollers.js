@@ -23,7 +23,7 @@ exports.postSendInvite = async (req, res, next) => {
 
         user.friends.push(friend);
         user.save();
-        res.send("Invited");
+        res.send("Invitation request sent");
 
         const friendRequest = {
             friendId: req.body.id,
@@ -47,6 +47,7 @@ exports.getAcceptInvite = (req, res, next) => {
            const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
            friend.status = "accepted";
            user.save();
+           mailUtils.requestAccepted(user);
        })
        res.status(200).send("Friend request accepted");
    })
@@ -63,3 +64,51 @@ exports.getDeclineInvite = (req, res, next) => {
     res.status(200).send("Friend request declined");
    })
 };
+
+exports.getFriendsList = (req, res, next) => {
+    User.findById(req.id)
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "Friends not found" });
+            }
+            const friends = user.friends.filter(user => user.status === "accepted");
+            res.send(friends);
+        })
+}
+
+exports.getPendingInvites = (req, res, next) => {
+    User.findById(req.id)
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "Awaiting friendships not found" });
+            }
+            const friends = user.friends.filter(user => user.status === "awaiting");
+            res.send(friends);
+        })
+}
+
+exports.deleteFriend = (req, res, next) => {
+    User.findById(req.id)
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+            }
+
+            const removedFriend1 = user.friends.find(user => user.friendId == req.body.id);
+            removedFriend1.remove();
+            user.save();
+
+            User.findById(req.body.id)
+            .then(user => {
+                if (!user) {
+                    res.status(400).json({ success: false, msg: "User not found" });
+                }
+    
+                const removedFriend2 = user.friends.find(user => user.friendId == req.id);
+                removedFriend2.remove();
+                user.save();
+            })
+
+            res.status(200).send("Friend removed");
+        })
+}

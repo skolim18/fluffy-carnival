@@ -44,14 +44,20 @@ mongoose
     .connect(config.database.url, config.database.options)
     .then(() => app.listen(config.server.port))
     .then(() =>
-    User.create( {
-        email: "admin@fluffyadmin.com",
-        isVerified: true,
-        password: "Admin123!",
-        role: "Admin",
-        name: "Admin",
-        surname: "Adminadmin",
-        gender: "other",
-        birthDate: 1970-01-01
-    }))
+        User.create({
+            email: "admin@fluffyadmin.com",
+            isVerified: true,
+            password: "Admin123!",
+            role: "Admin",
+            name: "Admin",
+            surname: "Adminadmin",
+            gender: "other",
+            birthDate: 1970 - 01 - 01
+
+        }).then((User) =>
+            User.encrypt()
+                .then(() => {
+                    User.save();
+                }))
+    )
     .catch(err => console.log(err));    

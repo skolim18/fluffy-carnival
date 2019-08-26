@@ -74,6 +74,11 @@ const UserSchema = new Schema({
     },
     friends: {
         type: [FriendSchema]
+    },
+    visibility: {
+        type: String,
+        enum: ["visible", "private"],
+        default: "visible"
     }
 })
 

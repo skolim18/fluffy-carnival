@@ -104,7 +104,7 @@ exports.postResetPassword = (req, res, next) => {
     User.findByEmail(req.body.email)
         .then(user => {
             if (!user) {
-                res.status(400).json({ success: false, msg: "Reset mail sent" });
+                res.status(400).json({ success: false, msg: "User not found" });
             }
             
             mailUtils.sendResetPasswordEmail(user);
@@ -154,3 +154,77 @@ exports.getFindCurrentUser = (req, res, next) => {
     });
     
   };
+
+exports.patchUpdateUser = (req, res, next) => {
+    User.findByIdAndUpdate(req.id, {
+        email: req.body.email,
+        name: req.body.name,
+        surname: req.body.surname,
+        gender: req.body.gender,
+        birthDate: req.body.birthDate,
+        bio: req.body.bio,
+        country: req.body.country,
+        city: req.body.city,
+        favouriteMovie: req.body.favouriteMovie
+    })
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+                return;
+            }
+            user.save();
+            res.status(200).json({ success: true, msg: "Profile updated" });
+            return;
+        })
+}
+
+exports.deleteUser = (req, res, next) => {
+    User.findOne({ _id: req.id })
+        .then(foundUser => {
+            if (foundUser.role === "User") {
+                User.findOne({ _id: req.id })
+                    .then(user => {
+                        if (!user) {
+                            res.status(400).json({ success: false, msg: "User not found" });
+                        }
+                        user.remove();
+                        res.status(200).send("User removed!");
+                    })
+            }
+            else if (foundUser.role === "Admin") {
+                User.findOne({ _id: req.body.id })
+                    .then(user => {
+                        if (!user) {
+                            res.status(400).json({ success: false, msg: "User not found" });
+                        }
+                        user.remove();
+                        res.status(200).send("User removed by Admin!");
+                    })
+            }
+        });
+};
+
+exports.getFindUsers = (req, res, next) => {
+    User.find({$and: [{visibility: "visible"}, {$or:[{email: req.body.email},{name: req.body.name},{surname: req.body.surname}]}]})
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "Users matching criteria not found"});
+            } 
+            res.send(user);
+        })
+}
+
+exports.putChangeVisibility = (req, res, next) => {
+    User.findById(req.id)
+        .then(user => {
+            if (!user) {
+                res.status(400).json({ success: false, msg: "User not found" });
+            }
+
+            user.visibility = req.body.visibility;
+            user.save();
+
+            res.status(200).json({ success: true, msg: "Visibility changed!" });
+                
+        })
+};

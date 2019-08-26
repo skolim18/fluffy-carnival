@@ -82,3 +82,16 @@ exports.sendInvitiationEmail = user => {
     };
     sgMail.send(msg);
 };
+
+exports.requestAccepted = user => {
+
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+        to: user.email,
+        from: 'fluffycarnival@fluffy.com',
+        subject: 'New friend on Fluffy Carnival',
+        text: 'You have a new friend on Fluffy Carnival',
+        html: `${user.name} ${user.surname} is your new friend`
+    };
+    sgMail.send(msg);
+};
