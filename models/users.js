@@ -5,7 +5,7 @@ const validate = require('mongoose-validator');
 const validator = require('validator');
 
 const FriendSchema = new Schema({
-    friendId: String,
+    friendId: mongoose.Schema.Types.ObjectId,
     status: String,
     inviteToken: String
     });
@@ -73,8 +73,7 @@ const UserSchema = new Schema({
         default: "User"
     },
     friends: {
-        type: [mongoose.Schema.Types.Object],
-        ref: 'friends'
+        type: [FriendSchema]
     }
 })
 
