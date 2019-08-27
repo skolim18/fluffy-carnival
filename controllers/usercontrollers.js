@@ -37,11 +37,11 @@ exports.postRegisterUser = async (req, res, next) => {
     mailUtils.sendActivationEmail(NewUser);
 
     NewUser.encrypt()
-    .then(() => {
-        NewUser.save();
-        res.status(201).send("User created");
-    })
-    .catch(() => res.status(400).send("Error occurred"));
+        .then(() => {
+            NewUser.save();
+            res.status(201).send("User created");
+        })
+        .catch(() => res.status(400).send("Error occurred"));
 
 };
 
@@ -49,7 +49,7 @@ exports.getActivateUser = (req, res, next) => {
     User.findOne({ guid: req.query.guid })
         .then(user => {
             if (!user) {
-                res.status(400).json({ success: false, msg: "User not found"});
+                res.status(400).json({ success: false, msg: "User not found" });
             }
             user.isVerified = true;
             user.save();
@@ -106,7 +106,7 @@ exports.postResetPassword = (req, res, next) => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
-            
+
             mailUtils.sendResetPasswordEmail(user);
             user.save();
             res.status(200).json({ success: true, msg: "Reset mail sent" });
@@ -128,53 +128,80 @@ exports.putResetPassword = (req, res, next) => {
             user.password = req.body.password;
 
             user.encrypt()
-            .then(() => {
-                user.save();
-                res.status(201).send("Password changed");
-            })
-            .catch(() => res.status(400).send("Error occurred"));
-                
+                .then(() => {
+                    user.save();
+                    res.status(201).send("Password changed");
+                })
+                .catch(() => res.status(400).send("Error occurred"));
+
         })
 };
 
 exports.getFindCurrentUser = (req, res, next) => {
     User.findById(req.id, { password: 0 }, function (err, user) {
-      if (err) return res.status(500).send("There was a problem finding the user.");
-      if (!user) return res.status(404).send("No user found.");
-      
+        if (err) return res.status(500).send("There was a problem finding the user.");
+        if (!user) return res.status(404).send("No user found.");
 
-    Post.find({authorId: req.id})
-        .then(post => {
-            if (!post) {
-                res.status(400).json({ success: false, msg: "Posts not found"});
-            }                
-        res.status(200).send({user: user, posts: post});   
-        });
-    
+
+        Post.find({ authorId: req.id })
+            .then(post => {
+                if (!post) {
+                    res.status(400).json({ success: false, msg: "Posts not found" });
+                }
+                res.status(200).send({ user: user, posts: post });
+            });
+
     });
-    
-  };
+
+};
 
 exports.patchUpdateUser = (req, res, next) => {
-    User.findByIdAndUpdate(req.id, {
-        email: req.body.email,
-        name: req.body.name,
-        surname: req.body.surname,
-        gender: req.body.gender,
-        birthDate: req.body.birthDate,
-        bio: req.body.bio,
-        country: req.body.country,
-        city: req.body.city,
-        favouriteMovie: req.body.favouriteMovie
-    })
-        .then(user => {
-            if (!user) {
-                res.status(400).json({ success: false, msg: "User not found" });
-                return;
+    User.findOne({ _id: req.id })
+        .then(foundUser => {
+            if (foundUser.role === "User") {
+                User.findByIdAndUpdate(req.id, {
+                    email: req.body.email,
+                    name: req.body.name,
+                    surname: req.body.surname,
+                    gender: req.body.gender,
+                    birthDate: req.body.birthDate,
+                    bio: req.body.bio,
+                    country: req.body.country,
+                    city: req.body.city,
+                    favouriteMovie: req.body.favouriteMovie
+                })
+                    .then(user => {
+                        if (!user) {
+                            res.status(400).json({ success: false, msg: "User not found" });
+                            return;
+                        }
+                        user.save();
+                        res.status(200).json({ success: true, msg: "Profile updated" });
+                        return;
+                    })
             }
-            user.save();
-            res.status(200).json({ success: true, msg: "Profile updated" });
-            return;
+            else if (foundUser.role === "Admin") {
+                User.findByIdAndUpdate(req.body.id, {
+                    email: req.body.email,
+                    name: req.body.name,
+                    surname: req.body.surname,
+                    gender: req.body.gender,
+                    birthDate: req.body.birthDate,
+                    bio: req.body.bio,
+                    country: req.body.country,
+                    city: req.body.city,
+                    favouriteMovie: req.body.favouriteMovie
+                })
+                    .then(user => {
+                        if (!user) {
+                            res.status(400).json({ success: false, msg: "User not found" });
+                            return;
+                        }
+                        user.save();
+                        res.status(200).json({ success: true, msg: "Profile updated by Admin" })
+                        return;
+                    })
+            }
         })
 }
 
@@ -205,11 +232,11 @@ exports.deleteUser = (req, res, next) => {
 };
 
 exports.getFindUsers = (req, res, next) => {
-    User.find({$and: [{visibility: "visible"}, {$or:[{email: req.body.email},{name: req.body.name},{surname: req.body.surname}]}]})
+    User.find({ $and: [{ visibility: "visible" }, { $or: [{ email: req.body.email }, { name: req.body.name }, { surname: req.body.surname }] }] })
         .then(user => {
             if (!user) {
-                res.status(400).json({ success: false, msg: "Users matching criteria not found"});
-            } 
+                res.status(400).json({ success: false, msg: "Users matching criteria not found" });
+            }
             res.send(user);
         })
 }
@@ -225,6 +252,6 @@ exports.putChangeVisibility = (req, res, next) => {
             user.save();
 
             res.status(200).json({ success: true, msg: "Visibility changed!" });
-                
+
         })
 };
