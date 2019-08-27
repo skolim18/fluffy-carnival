@@ -158,7 +158,7 @@ exports.getFindCurrentUser = (req, res, next) => {
 exports.patchUpdateUser = (req, res, next) => {
     User.findOne({ _id: req.id })
         .then(foundUser => {
-            if (foundUser.role === "User") {
+            if ((foundUser.role === "User") || (foundUser.role === "Moderator")) {
                 User.findByIdAndUpdate(req.id, {
                     email: req.body.email,
                     name: req.body.name,
@@ -190,7 +190,8 @@ exports.patchUpdateUser = (req, res, next) => {
                     bio: req.body.bio,
                     country: req.body.country,
                     city: req.body.city,
-                    favouriteMovie: req.body.favouriteMovie
+                    favouriteMovie: req.body.favouriteMovie,
+                    role: req.body.role
                 })
                     .then(user => {
                         if (!user) {
