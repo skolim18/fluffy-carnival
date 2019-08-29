@@ -34,9 +34,9 @@ const successHandler = (jwt_payload, done) => {
 
 passport.use(new Strategy(opts, successHandler));
 
-app.use(UserRoutes);
-app.use(FriendsRoutes);
-app.use(PostRoutes);
+app.use('/user', UserRoutes);
+app.use('/friends', FriendsRoutes);
+app.use('/posts', PostRoutes);
 
 app.get('/secret', passport.authenticate('jwt', { session: false }), (req, res, next) => res.send('Secret hello'));
 

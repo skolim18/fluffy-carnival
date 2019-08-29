@@ -1,4 +1,5 @@
 const Post = require('../models/posts');
+const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const filesUtils = require('../utils/files');
@@ -46,7 +47,12 @@ exports.deletePost = (req, res, next) => {
         .then(post => {
             if (!post) {
             res.status(400).json({ success: false, msg: "Post not found"});
+            }             
+            else if (post.authorId != req.id) {
+            res.status(400).json({success: false, msg: "Your not allowed to delete other user's post."});
+            return;
             }
+        
             post.remove();
             res.status(200).send("Post removed!");
     })
@@ -66,6 +72,10 @@ exports.patchUpdatePost = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "Post not found" });
                 return;
             }
+            else if (post.authorId != req.id) {
+                res.status(400).json({success: false, msg: "Your not allowed to modify other user's post."});
+                return;
+            }
         
             post.save();
             res.status(200).json({ success: true, msg: "Post updated" });
@@ -79,6 +89,10 @@ exports.patchPublishPost = (req, res, next) => {
         .then (post => {
             if (!post) {
                 res.status(400).json({ success: false, msg: "Post not found" });
+                return;
+            }
+            else if (post.authorId != req.id) {
+                res.status(400).json({success: false, msg: "Your not allowed to publish other user's post."});
                 return;
             }
         
