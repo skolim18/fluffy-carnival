@@ -74,7 +74,7 @@ exports.postAuthenticateUser = (req, res, next) => {
             user.comparePassword(password)
                 .then(result => {
                     if (result) {
-                        const token = jwt.sign({ email: user.email, id: user._id }, config.server.secret, { expiresIn: 1000 });
+                        const token = jwt.sign({ email: user.email, id: user._id }, config.server.secret, { expiresIn: 10000 });
                         res.json({
                             auth: true,
                             token: `${token}`
@@ -138,12 +138,12 @@ exports.putResetPassword = (req, res, next) => {
 };
 
 exports.getFindCurrentUser = (req, res, next) => {
-    User.findById(req.id, { password: 0 }, function (err, user) {
+    User.findById(loggedUserId, { password: 0 }, function (err, user) {
         if (err) return res.status(500).send("There was a problem finding the user.");
         if (!user) return res.status(404).send("No user found.");
 
 
-        Post.find({ authorId: req.id })
+        Post.find({ authorId: loggedUserId })
             .then(post => {
                 if (!post) {
                     res.status(400).json({ success: false, msg: "Posts not found" });
@@ -156,10 +156,10 @@ exports.getFindCurrentUser = (req, res, next) => {
 };
 
 exports.patchUpdateUser = (req, res, next) => {
-    User.findOne({ _id: req.id })
+    User.findOne({ _id: loggedUserId })
         .then(foundUser => {
             if ((foundUser.role === "User") || (foundUser.role === "Moderator")) {
-                User.findByIdAndUpdate(req.id, {
+                User.findByIdAndUpdate(loggedUserId, {
                     email: req.body.email,
                     name: req.body.name,
                     surname: req.body.surname,
@@ -207,10 +207,10 @@ exports.patchUpdateUser = (req, res, next) => {
 }
 
 exports.deleteUser = (req, res, next) => {
-    User.findOne({ _id: req.id })
+    User.findOne({ _id: loggedUserId })
         .then(foundUser => {
             if (foundUser.role === "User") {
-                User.findOne({ _id: req.id })
+                User.findOne({ _id: loggedUserId })
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -243,7 +243,7 @@ exports.getFindUsers = (req, res, next) => {
 }
 
 exports.putChangeVisibility = (req, res, next) => {
-    User.findById(req.id)
+    User.findById(loggedUserId)
         .then(user => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "User not found" });

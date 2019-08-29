@@ -16,7 +16,7 @@ exports.postSendInvite = async (req, res, next) => {
         await mailUtils.sendInvitiationEmail(user);
         
         const friend = {
-            friendId: req.id,
+            friendId: loggedUserId,
             status: status,
             inviteToken: inviteToken
         };
@@ -31,7 +31,7 @@ exports.postSendInvite = async (req, res, next) => {
             inviteToken: inviteToken
         };
 
-        await User.findById(req.id)
+        await User.findById(loggedUserId)
         .then(async user => {
             user.friends.push(friendRequest);
             user.save();
@@ -66,7 +66,7 @@ exports.getDeclineInvite = (req, res, next) => {
 };
 
 exports.getFriendsList = (req, res, next) => {
-    User.findById(req.id)
+    User.findById(loggedUserId)
         .then(user => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "Friends not found" });
@@ -77,7 +77,7 @@ exports.getFriendsList = (req, res, next) => {
 }
 
 exports.getPendingInvites = (req, res, next) => {
-    User.findById(req.id)
+    User.findById(loggedUserId)
         .then(user => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "Awaiting friendships not found" });
@@ -88,7 +88,7 @@ exports.getPendingInvites = (req, res, next) => {
 }
 
 exports.deleteFriend = (req, res, next) => {
-    User.findById(req.id)
+    User.findById(loggedUserId)
         .then(user => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "User not found" });
@@ -104,7 +104,7 @@ exports.deleteFriend = (req, res, next) => {
                     res.status(400).json({ success: false, msg: "User not found" });
                 }
     
-                const removedFriend2 = user.friends.find(user => user.friendId == req.id);
+                const removedFriend2 = user.friends.find(user => user.friendId == loggedUserId);
                 removedFriend2.remove();
                 user.save();
             })

@@ -11,7 +11,7 @@ exports.postAddNew = (req, res, next) => {
     }
 
     let NewPost = new Post({
-        authorId: req.id,
+        authorId: loggedUserId,
         title: req.body.title,
         description: req.body.description,
         privacyLevel: req.body.privacyLevel,
@@ -28,7 +28,7 @@ exports.getFindPost = (req, res, next) => {
     Post.find({
         $or: 
         [{$and: [{ _id: req.body.id}, {privacyLevel: "public"}]}, 
-        {$and: [{authorId: req.id}, {privacyLevel: "private"}]}, 
+        {authorId: loggedUserId}, 
         {$and: [{description: req.body.description}, {privacyLevel: "public"}]},
         {$and: [{title: req.body.title}, {privacyLevel: req.body.privacyLevel}]}]
        })
@@ -48,7 +48,7 @@ exports.deletePost = (req, res, next) => {
             if (!post) {
             res.status(400).json({ success: false, msg: "Post not found"});
             }             
-            else if (post.authorId != req.id) {
+            else if (post.authorId != loggedUserId) {
             res.status(400).json({success: false, msg: "Your not allowed to delete other user's post."});
             return;
             }
@@ -72,7 +72,7 @@ exports.patchUpdatePost = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "Post not found" });
                 return;
             }
-            else if (post.authorId != req.id) {
+            else if (post.authorId != loggedUserId) {
                 res.status(400).json({success: false, msg: "Your not allowed to modify other user's post."});
                 return;
             }
@@ -84,18 +84,18 @@ exports.patchUpdatePost = (req, res, next) => {
 };
 
 exports.patchPublishPost = (req, res, next) => {
-    Post.findByIdAndUpdate(req.body.id, {
-        state: req.body.state})
+    Post.findById(req.body.id)
         .then (post => {
             if (!post) {
                 res.status(400).json({ success: false, msg: "Post not found" });
                 return;
             }
-            else if (post.authorId != req.id) {
+            else if (post.authorId != loggedUserId) {
                 res.status(400).json({success: false, msg: "Your not allowed to publish other user's post."});
                 return;
             }
         
+            post.state = "published";
             post.save();
             res.status(200).json({ success: true, msg: "Post published!" });
             return;

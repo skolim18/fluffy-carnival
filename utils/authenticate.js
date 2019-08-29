@@ -10,7 +10,7 @@ exports.verifyToken = (req, res, next) => {
       if (err)
       return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
     
-      req.id = decoded.id;
+      loggedUserId = decoded.id;
       next();
     });
   }
