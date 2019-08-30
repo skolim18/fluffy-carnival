@@ -1,5 +1,6 @@
 const config = require('../config');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 const User = require('../models/users');
 const Post = require('../models/posts');
 const mailUtils = require('../utils/mail');
@@ -144,11 +145,14 @@ exports.getFindCurrentUser = (req, res, next) => {
 
 
         Post.find({ authorId: loggedUserId })
-            .then(post => {
-                if (!post) {
+            .then(posts => {
+                if (!posts) {
                     res.status(400).json({ success: false, msg: "Posts not found" });
                 }
-                res.status(200).send({ user: user, posts: post });
+                const userPosts = _.map(posts, post => _.pick(post, ['title','publishDate','description','tags']));            
+                const currentUser = _.pick(user, ['name', 'surname']);
+
+                res.status(200).send({ user: currentUser, posts: userPosts });
             });
 
     });
@@ -206,6 +210,29 @@ exports.patchUpdateUser = (req, res, next) => {
         })
 }
 
+exports.patchChangePassword = (req, res, next) => {
+    User.findOne({ _id: loggedUserId })
+        .then(foundUser => {
+            if ((foundUser.role === "User") || (foundUser.role === "Moderator")) {
+                User.findByIdAndUpdate(loggedUserId, {
+                    password: req.body.password
+                })
+                    .then(user => {
+                        if (!user) {
+                            res.status(400).json({ success: false, msg: "User not found" });
+                            return;
+                        }
+                        else if (req.body.validatepassword != req.body.password) {
+                            res.status(400).json({ success: false, msg: "Passwords don't match."})
+                        }
+                        user.save();
+                        res.status(200).json({ success: true, msg: "Password changed" });
+                        return;
+                    })
+            }
+        })
+    }
+
 exports.deleteUser = (req, res, next) => {
     User.findOne({ _id: loggedUserId })
         .then(foundUser => {
@@ -234,11 +261,14 @@ exports.deleteUser = (req, res, next) => {
 
 exports.getFindUsers = (req, res, next) => {
     User.find({ $and: [{ visibility: "visible" }, { $or: [{ email: req.body.email }, { name: req.body.name }, { surname: req.body.surname }] }] })
-        .then(user => {
-            if (!user) {
+        .then(users => {
+            if (!users) {
                 res.status(400).json({ success: false, msg: "Users matching criteria not found" });
             }
-            res.send(user);
+
+            const foundUsers = _.map(users, user => _.pick(user, ['_id','name','surname','gender','city']));
+
+            res.send(foundUsers);
         })
 }
 
@@ -255,4 +285,4 @@ exports.putChangeVisibility = (req, res, next) => {
             res.status(200).json({ success: true, msg: "Visibility changed!" });
 
         })
-};
+}

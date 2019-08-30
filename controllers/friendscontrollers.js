@@ -1,7 +1,7 @@
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const Friend = require('../models/users');
+const friendsUtils = require('../utils/friends');
 const mailUtils = require('../utils/mail');
 
 exports.postSendInvite = async (req, res, next) => {
@@ -11,12 +11,23 @@ exports.postSendInvite = async (req, res, next) => {
     .then(async user => {
         if (!user) {
         res.status(400).json({ success: false, msg: "User does not exist!"});
+        } 
+        else if (req.body.id === loggedUserId) {
+            res.status(400).json({ success: false, msg: "You can't invite yourself!"});
+            return;
         }
+        else if (friendsUtils.areWeFriends(user) > 0) {
+            res.status(400).json({ success: false, msg: "Already your friend!"});
+            return;
+        }
+
+        console.log(friendsUtils.areWeFriends(user));
 
         await mailUtils.sendInvitiationEmail(user);
         
         const friend = {
-            friendId: loggedUserId,
+            requestor: loggedUserId,
+            requested: req.body.id,
             status: status,
             inviteToken: inviteToken
         };
@@ -26,7 +37,8 @@ exports.postSendInvite = async (req, res, next) => {
         res.send("Invitation request sent");
 
         const friendRequest = {
-            friendId: req.body.id,
+            requestor: loggedUserId,
+            requested: req.body.id,
             status: status,
             inviteToken: inviteToken
         };
@@ -47,7 +59,8 @@ exports.getAcceptInvite = (req, res, next) => {
            const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
            friend.status = "accepted";
            user.save();
-           mailUtils.requestAccepted(user);
+
+           //mailUtils.requestAccepted(user);
        })
        res.status(200).send("Friend request accepted");
    })
@@ -58,7 +71,7 @@ exports.getDeclineInvite = (req, res, next) => {
    .then (users => {
         users.forEach(user => {
             const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
-            friend.status = "declined";
+            friend.remove();
             user.save();
         })
     res.status(200).send("Friend request declined");
@@ -94,7 +107,7 @@ exports.deleteFriend = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
 
-            const removedFriend1 = user.friends.find(user => user.friendId == req.body.id);
+            const removedFriend1 = user.friends.find(user => user.requestor == req.body.id);
             removedFriend1.remove();
             user.save();
 
@@ -104,7 +117,7 @@ exports.deleteFriend = (req, res, next) => {
                     res.status(400).json({ success: false, msg: "User not found" });
                 }
     
-                const removedFriend2 = user.friends.find(user => user.friendId == loggedUserId);
+                const removedFriend2 = user.friends.find(user => user.requested == loggedUserId);
                 removedFriend2.remove();
                 user.save();
             })

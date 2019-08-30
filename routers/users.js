@@ -13,6 +13,7 @@ router.get('/reset', userControllers.getResetPassword);
 router.post('/reset',userControllers.postResetPassword);
 router.put('/reset', userControllers.putResetPassword);
 router.patch('/update', authenticate.verifyToken, userControllers.patchUpdateUser);
+router.patch('/changepass', authenticate.verifyToken, userControllers.patchChangePassword);
 router.delete('/delete', authenticate.verifyToken, userControllers.deleteUser);
 router.put('/visibility', authenticate.verifyToken, userControllers.putChangeVisibility);
 router.get('/find', authenticate.verifyToken, userControllers.getFindUsers);

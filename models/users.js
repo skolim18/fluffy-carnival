@@ -5,7 +5,8 @@ const validate = require('mongoose-validator');
 const validator = require('validator');
 
 const FriendSchema = new Schema({
-    friendId: mongoose.Schema.Types.ObjectId,
+    requestor: mongoose.Schema.Types.ObjectId,
+    requested: mongoose.Schema.Types.ObjectId,
     status: String,
     inviteToken: String
     });

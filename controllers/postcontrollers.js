@@ -1,6 +1,7 @@
 const Post = require('../models/posts');
 const User = require('../models/users');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 const fs = require('fs');
 const filesUtils = require('../utils/files');
 
@@ -26,18 +27,18 @@ exports.postAddNew = (req, res, next) => {
 
 exports.getFindPost = (req, res, next) => {
     Post.find({
-        $or: 
-        [{$and: [{ _id: req.body.id}, {privacyLevel: "public"}]}, 
-        {authorId: loggedUserId}, 
-        {$and: [{description: req.body.description}, {privacyLevel: "public"}]},
-        {$and: [{title: req.body.title}, {privacyLevel: req.body.privacyLevel}]}]
+        $or: [
+        {$and: [{ _id: req.query.id}, {privacyLevel: "public"}]}, 
+        {$and: [{description: req.query.description}, {privacyLevel: "public"}]},
+        {$and: [{title: req.query.title}, {privacyLevel: req.query.privacyLevel}]}]
        })
-        .then (post => {
-            if (!post) {
-                res.status(400).json({ success: false, msg: "Post not found" });
+        .then (posts => {
+            if (!posts) {
+                res.status(400).json({ success: false, msg: "Posts not found" });
             }
 
-            res.send(post);
+            const foundPosts = _.map(posts, post => _.pick(post, ['title','publishDate','description','tags'])); 
+            res.send(foundPosts);
             return;
         });
 };
@@ -84,7 +85,7 @@ exports.patchUpdatePost = (req, res, next) => {
 };
 
 exports.patchPublishPost = (req, res, next) => {
-    Post.findById(req.body.id)
+    Post.findById(req.query.id)
         .then (post => {
             if (!post) {
                 res.status(400).json({ success: false, msg: "Post not found" });
