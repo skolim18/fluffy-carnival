@@ -183,7 +183,7 @@ exports.patchUpdateUser = (req, res, next) => {
                     res.status(400).json({ success: false, msg: "This data cannot be modified" });
                     return;
                 }
-                User.findByIdAndUpdate(req.query.id, {$set: req.bod})
+                User.findByIdAndUpdate(req.query.id, {$set: req.body})
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });

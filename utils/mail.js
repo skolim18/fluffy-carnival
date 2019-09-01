@@ -72,15 +72,15 @@ exports.sendInvitiationEmail = user => {
     });
 
 
-//    sgMail.setApiKey(config.SENDGRID_API_KEY);
-//    const msg = {
-//        to: user.email,
-//        from: 'fluffycarnival@fluffy.com',
-//        subject: 'Friend request on Fluffy Carnival',
-//        text: 'Click to accept invitiation',
-//        html: `<a href="${generatedURLaccept}">Click</a> to accept invitiation. <a href="${generatedURLdecline}">Click</a> to decline invitiation. `
-//    };
-//    sgMail.send(msg);
+   sgMail.setApiKey(config.SENDGRID_API_KEY);
+   const msg = {
+       to: user.email,
+       from: 'fluffycarnival@fluffy.com',
+       subject: 'Friend request on Fluffy Carnival',
+       text: 'Click to accept invitiation',
+       html: `<a href="${generatedURLaccept}">Click</a> to accept invitiation. <a href="${generatedURLdecline}">Click</a> to decline invitiation. `
+   };
+   sgMail.send(msg);
 };
 
 exports.requestAccepted = user => {
