@@ -4,30 +4,28 @@ const User = require('../models/users');
 const friendsUtils = require('../utils/friends');
 const mailUtils = require('../utils/mail');
 
-exports.postSendInvite = async (req, res, next) => {
+exports.postSendInvite = (req, res, next) => {
     const status = "awaiting";
 
-    await User.findById(req.body.id)
-    .then(async user => {
+    User.findById(req.query.id)
+    .then(user => {
         if (!user) {
-        res.status(400).json({ success: false, msg: "User does not exist!"});
+            res.status(400).json({ success: false, msg: "User does not exist!"});
         } 
-        else if (req.body.id === loggedUserId) {
+        else if (req.query.id === loggedUserId) {
             res.status(400).json({ success: false, msg: "You can't invite yourself!"});
             return;
         }
-        else if (friendsUtils.areWeFriends(user) > 0) {
+        else if (friendsUtils.areWeFriends(user) == true) {
             res.status(400).json({ success: false, msg: "Already your friend!"});
             return;
         }
-
-        console.log(friendsUtils.areWeFriends(user));
-
-        await mailUtils.sendInvitiationEmail(user);
+        
+        mailUtils.sendInvitiationEmail(user);
         
         const friend = {
             requestor: loggedUserId,
-            requested: req.body.id,
+            requested: req.query.id,
             status: status,
             inviteToken: inviteToken
         };
@@ -38,13 +36,13 @@ exports.postSendInvite = async (req, res, next) => {
 
         const friendRequest = {
             requestor: loggedUserId,
-            requested: req.body.id,
+            requested: req.query.id,
             status: status,
             inviteToken: inviteToken
         };
 
-        await User.findById(loggedUserId)
-        .then(async user => {
+        User.findById(loggedUserId)
+        .then(user => {
             user.friends.push(friendRequest);
             user.save();
         })
@@ -59,8 +57,6 @@ exports.getAcceptInvite = (req, res, next) => {
            const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
            friend.status = "accepted";
            user.save();
-
-           //mailUtils.requestAccepted(user);
        })
        res.status(200).send("Friend request accepted");
    })
@@ -85,7 +81,9 @@ exports.getFriendsList = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "Friends not found" });
             }
             const friends = user.friends.filter(user => user.status === "accepted");
-            res.send(friends);
+            const friendsIds = friendsUtils.myFriends(user);
+
+            res.send({friends: friendsIds});
         })
 }
 

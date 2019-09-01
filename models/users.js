@@ -83,6 +83,18 @@ const UserSchema = new Schema({
     }
 })
 
+UserSchema.index({
+  name: 'text',
+  surname: 'text',
+  bio: "text"
+}, {
+  weights: {
+    name: 5,
+    surname: 5,
+    bio: 1
+  },
+});
+
 UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };

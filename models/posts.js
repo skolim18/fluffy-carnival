@@ -51,4 +51,17 @@ const PostSchema = new Schema({
 
   });
 
+  
+PostSchema.index({
+    title: 'text',
+    description: 'text',
+    tags: "text"
+  }, {
+    weights: {
+      title: 5,
+      description: 3,
+      tags: 1
+    },
+  });
+
 module.exports = model('Post', PostSchema);

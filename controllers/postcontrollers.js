@@ -1,6 +1,7 @@
 const Post = require('../models/posts');
 const User = require('../models/users');
 const jwt = require('jsonwebtoken');
+const searchParams = require('../utils/search');
 const _ = require('lodash');
 const fs = require('fs');
 const filesUtils = require('../utils/files');
@@ -26,21 +27,17 @@ exports.postAddNew = (req, res, next) => {
 };
 
 exports.getFindPost = (req, res, next) => {
-    Post.find({
-        $or: [
-        {$and: [{ _id: req.query.id}, {privacyLevel: "public"}]}, 
-        {$and: [{description: req.query.description}, {privacyLevel: "public"}]},
-        {$and: [{title: req.query.title}, {privacyLevel: req.query.privacyLevel}]}]
-       })
+    Post.find(searchParams.postSearch(req))
         .then (posts => {
-            if (!posts) {
+            if (!posts || posts.length == 0) {
                 res.status(400).json({ success: false, msg: "Posts not found" });
+                return;
             }
 
-            const foundPosts = _.map(posts, post => _.pick(post, ['title','publishDate','description','tags'])); 
+            const foundPosts = _.map(posts, post => _.pick(post, ['id','title','publishDate','authorId','description','tags'])); 
             res.send(foundPosts);
-            return;
-        });
+            
+        })
 };
 
 exports.deletePost = (req, res, next) => {

@@ -4,6 +4,8 @@ const _ = require('lodash');
 const User = require('../models/users');
 const Post = require('../models/posts');
 const mailUtils = require('../utils/mail');
+const friendsUtils = require('../utils/friends');
+const searchParams = require('../utils/search');
 
 exports.postRegisterUser = async (req, res, next) => {
     if (!req.body.email || !req.body.name || !req.body.surname || !req.body.password || !req.body.gender || !req.body.birthDate) {
@@ -154,26 +156,18 @@ exports.getFindCurrentUser = (req, res, next) => {
 
                 res.status(200).send({ user: currentUser, posts: userPosts });
             });
-
     });
-
 };
 
 exports.patchUpdateUser = (req, res, next) => {
     User.findOne({ _id: loggedUserId })
         .then(foundUser => {
             if ((foundUser.role === "User") || (foundUser.role === "Moderator")) {
-                User.findByIdAndUpdate(loggedUserId, {
-                    email: req.body.email,
-                    name: req.body.name,
-                    surname: req.body.surname,
-                    gender: req.body.gender,
-                    birthDate: req.body.birthDate,
-                    bio: req.body.bio,
-                    country: req.body.country,
-                    city: req.body.city,
-                    favouriteMovie: req.body.favouriteMovie
-                })
+                if (req.body.password || req.body.email || req.body.role) {
+                    res.status(400).json({ success: false, msg: "This data cannot be modified" });
+                    return;
+                }
+                User.findByIdAndUpdate(loggedUserId, {$set: req.body})
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -185,18 +179,11 @@ exports.patchUpdateUser = (req, res, next) => {
                     })
             }
             else if (foundUser.role === "Admin") {
-                User.findByIdAndUpdate(req.body.id, {
-                    email: req.body.email,
-                    name: req.body.name,
-                    surname: req.body.surname,
-                    gender: req.body.gender,
-                    birthDate: req.body.birthDate,
-                    bio: req.body.bio,
-                    country: req.body.country,
-                    city: req.body.city,
-                    favouriteMovie: req.body.favouriteMovie,
-                    role: req.body.role
-                })
+                if (req.body.password || req.body.email) {
+                    res.status(400).json({ success: false, msg: "This data cannot be modified" });
+                    return;
+                }
+                User.findByIdAndUpdate(req.query.id, {$set: req.bod})
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -225,6 +212,14 @@ exports.patchChangePassword = (req, res, next) => {
                         else if (req.body.validatepassword != req.body.password) {
                             res.status(400).json({ success: false, msg: "Passwords don't match."})
                         }
+
+                        user.encrypt()
+                        .then(() => {
+                            user.save();
+                            res.status(201).send("Password changed");
+                        })
+                        .catch(() => res.status(400).send("Error occurred"));
+
                         user.save();
                         res.status(200).json({ success: true, msg: "Password changed" });
                         return;
@@ -247,7 +242,7 @@ exports.deleteUser = (req, res, next) => {
                     })
             }
             else if (foundUser.role === "Admin") {
-                User.findOne({ _id: req.body.id })
+                User.findOne({ _id: req.query.id })
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -260,12 +255,12 @@ exports.deleteUser = (req, res, next) => {
 };
 
 exports.getFindUsers = (req, res, next) => {
-    User.find({ $and: [{ visibility: "visible" }, { $or: [{ email: req.body.email }, { name: req.body.name }, { surname: req.body.surname }] }] })
+
+    User.find({ $and: [{ visibility: "visible" }, searchParams.userSearch(req)]})
         .then(users => {
-            if (!users) {
+            if (!users || (users.length == 0)) {
                 res.status(400).json({ success: false, msg: "Users matching criteria not found" });
             }
-
             const foundUsers = _.map(users, user => _.pick(user, ['_id','name','surname','gender','city']));
 
             res.send(foundUsers);
