@@ -13,9 +13,9 @@ class SignUp extends Component {
     render() {
         const { handleSubmit } = this.props;
         return (
-            <div className="row">
-                <div className="col">
-                    <div class="col-md text-center">
+            <div className="container-fluid">
+                <div className="row justify-content-center">
+                    <div className="col-sm-6 col-lg-4 text-center">
                         <form onSubmit={handleSubmit(this.onSubmit)}>
                             <fieldset>
                                 <Field
@@ -90,24 +90,23 @@ class SignUp extends Component {
                                     component={CustomInput} />
                             </fieldset>
                             <div class="col-md text-center">
-                                <button type="submit" className="btn btn-primary">
+                                <button type="submit" className="btn-lg btn-primary">
                                     Sign Up!
                         </button>
                             </div>
                         </form>
                     </div>
-                </div>
-                <div className="col">
-                    <div className="text-center">
-                        <div className="alert alert-primary">
-                            Or sign up using Social Media Services!
+                    <div className="col-sm-6 col-lg-4 text-center" >
+                        <div className="text-center" style={{ padding: "50px" }}>
+                            <div className="alert alert-primary">
+                                <h3>Or sign up using Social Media Services!</h3>
                             </div>
-                        <button className="btn btn-primary">Facebook</button>
-                        <button className="btn btn-primary">Google</button>
+                            <button className="btn-lg btn-primary" style={{ padding: "15px" }} style={{ margin: "10px" }}>Facebook</button>
+                            <button className="btn-lg btn-primary" style={{ padding: "15px" }} style={{ margin: "10px" }}>Google</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
         );
     }
 }

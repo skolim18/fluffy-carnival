@@ -13,9 +13,9 @@ class SignIn extends Component {
     render() {
         const { handleSubmit } = this.props;
         return (
-            <div className="row">
-                <div className="col">
-                    <div class="col-md text-center">
+            <div className="container-fluid">
+                <div className="row justify-content-center">
+                    <div class="col-md-3 text-center">
                         <form onSubmit={handleSubmit(this.onSubmit)}>
                             <h1>Sign In</h1>
                             <fieldset>
