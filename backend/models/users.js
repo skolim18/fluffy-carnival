@@ -9,7 +9,7 @@ const FriendSchema = new Schema({
     requested: mongoose.Schema.Types.ObjectId,
     status: String,
     inviteToken: String
-    });
+});
 
 mongoose.model('friend', FriendSchema, 'friends');
 
@@ -35,7 +35,7 @@ const UserSchema = new Schema({
     },
     gender: {
         type: String,
-        enum: ["female", "male", "other"],
+        enum: ["Female", "Male", "Other"],
         required: true
     },
     birthDate: {
@@ -64,8 +64,8 @@ const UserSchema = new Schema({
     expirationTokenDate: {
         type: Date
     },
-    isVerified: { 
-        type: Boolean, 
+    isVerified: {
+        type: Boolean,
         default: false
     },
     role: {
@@ -84,15 +84,15 @@ const UserSchema = new Schema({
 })
 
 UserSchema.index({
-  name: 'text',
-  surname: 'text',
-  bio: "text"
+    name: 'text',
+    surname: 'text',
+    bio: "text"
 }, {
-  weights: {
-    name: 5,
-    surname: 5,
-    bio: 1
-  },
+    weights: {
+        name: 5,
+        surname: 5,
+        bio: 1
+    },
 });
 
 UserSchema.methods.comparePassword = function (password) {

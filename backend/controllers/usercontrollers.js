@@ -8,8 +8,10 @@ const friendsUtils = require('../utils/friends');
 const searchParams = require('../utils/search');
 
 exports.postRegisterUser = async (req, res, next) => {
+    console.log("h1")
     if (!req.body.email || !req.body.name || !req.body.surname || !req.body.password || !req.body.gender || !req.body.birthDate) {
         res.status(401).send('Missing required data!');
+        console.log(req.body)
         return;
     }
     if (req.body.password.length < 8) {
