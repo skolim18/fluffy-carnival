@@ -13,12 +13,11 @@ class SignUp extends Component {
         gender: 'Other',
         country: '',
         city: '',
-        bio: '',
-        birthDate: '12-05-1999'
+        birthDate: ''
     }
 
 
-    onSubmit = (formData) => {
+    onSubmit = () => {
         Axios.post('http://localhost:9090/user/register', {
             email: this.state.email,
             name: this.state.name,
@@ -27,7 +26,6 @@ class SignUp extends Component {
             password: this.state.password,
             country: this.state.country,
             city: this.state.city,
-            bio: this.state.bio,
             birthDate: this.state.birthDate
         })
             .then(data => {
@@ -80,6 +78,18 @@ class SignUp extends Component {
                                     component={CustomInput} />
                             </fieldset>
                             <fieldset>
+                                <Field
+                                    name="birthDate"
+                                    type="text"
+                                    id="birthdate"
+                                    label="Birthdate"
+                                    value={this.state.birthDate}
+                                    onChange={event => this.handleChange(event, "birthDate")}
+                                    placeholder="DD-MM-YYYY"
+                                    component={CustomInput} />
+
+                            </fieldset>
+                            <fieldset>
                                 <label> Gender</label>
                                 <select className="form-control"
                                     onChange={event => this.handleChange(event, "gender")}
@@ -121,17 +131,6 @@ class SignUp extends Component {
                                     value={this.state.city}
                                     onChange={event => this.handleChange(event, "city")}
                                     placeholder="ex. Katowice"
-                                    component={CustomInput} />
-                            </fieldset>
-                            <fieldset>
-                                <Field
-                                    name="bio"
-                                    type="text"
-                                    id="bio"
-                                    label="Bio:"
-                                    value={this.state.bio}
-                                    onChange={event => this.handleChange(event, "bio")}
-                                    placeholder="ex. I like to swim"
                                     component={CustomInput} />
                             </fieldset>
                             <div className="col-md text-center">

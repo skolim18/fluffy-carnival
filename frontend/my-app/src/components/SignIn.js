@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { reduxForm, Field } from 'redux-form';
 import Axios from "axios";
+import { Link } from 'react-router-dom'
 import CustomInput from './Customimput';
 
 
@@ -11,7 +12,7 @@ class SignIn extends Component {
         password: ''
     }
 
-    onSubmit = (formData) => {
+    onSubmit = () => {
         Axios.post('http://localhost:9090/user/authenticate', {
             email: this.state.email,
             password: this.state.password
@@ -56,6 +57,9 @@ class SignIn extends Component {
                                     onChange={event => this.handleChange(event, "password")}
                                     placeholder="yoursuperpassword"
                                     component={CustomInput} />
+                            </fieldset>
+                            <fieldset className="text-right" style={{ padding: '5px' }}>
+                                <Link to='/resetpassword' >Forgot your password?</Link>
                             </fieldset>
                             <div className='col-md text-center'>
                                 <button type="sumbit" className="btn btn-primary">

@@ -54,7 +54,7 @@ mongoose
             role: "Admin",
             name: "Admin",
             surname: "Adminadmin",
-            gender: "other",
+            gender: "Other",
             birthDate: 1970 - 01 - 01
 
         }).then((User) =>
