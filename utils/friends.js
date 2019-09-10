@@ -27,24 +27,3 @@ exports.myFriends = user => {
         
         return friendsIds;
 };
-
-exports.friendsOnly = (user) => {
-
-        let friendsIds = [];
-        const friends = user.friends.filter(user => user.status === "accepted")
-        
-        friends.forEach(friend => {
-        if (friend.requestor == loggedUserId){
-                friendsIds.push(friend.requested);
-            }
-        else if (friend.requested == loggedUserId) {
-            friendsIds.push(friend.requestor);
-        }})   
-
-        if (friendsIds.includes(user.id)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-};

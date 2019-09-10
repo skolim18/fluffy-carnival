@@ -26,18 +26,17 @@ exports.postAddNew = (req, res, next) => {
     res.status(200).json({ success: true, msg: "Post created!" });
 };
 
-exports.getFindPost = (req, res, next) => {
-    Post.find(searchParams.postSearch(req))
-        .then (posts => {
-            if (!posts || posts.length == 0) {
-                res.status(400).json({ success: false, msg: "Posts not found" });
-                return;
-            }
+exports.getFindPost = async (req, res, next) => {
+    const posts = await searchParams.postSearch(req);
+        
+    if (!posts || posts.length == 0) {
+        res.status(400).json({ success: false, msg: "Posts not found" });
+        return;
+    }
 
-            const foundPosts = _.map(posts, post => _.pick(post, ['id','title','publishDate','authorId','description','tags'])); 
-            res.send(foundPosts);
+    const foundPosts = _.map(posts, post => _.pick(post, ['id','title','publishDate','authorId','description','tags','privacyLevel'])); 
+    res.send(foundPosts);
             
-        })
 };
 
 exports.deletePost = (req, res, next) => {
