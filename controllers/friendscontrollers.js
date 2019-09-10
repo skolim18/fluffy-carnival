@@ -1,5 +1,6 @@
 const config = require('../config');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 const User = require('../models/users');
 const friendsUtils = require('../utils/friends');
 const mailUtils = require('../utils/mail');
@@ -50,28 +51,23 @@ exports.postSendInvite = (req, res, next) => {
     })
 };
 
+modifyUser = (res, req, users, modificator, status) => {
+    users.forEach(user => {
+        const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
+        modificator(friend);
+        user.save();
+    })
+    res.status(200).send(status);
+}
+
 exports.getAcceptInvite = (req, res, next) => {
     User.find({"friends.inviteToken": req.query.inviteToken})
-   .then (users => {
-       users.forEach(user => {
-           const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
-           friend.status = "accepted";
-           user.save();
-       })
-       res.status(200).send("Friend request accepted");
-   })
+        .then (users => modifyUser(res, req, users, friend => friend.status = "accepted", "Friend request accepted"))
 };
 
 exports.getDeclineInvite = (req, res, next) => {
     User.find({"friends.inviteToken": req.query.inviteToken})
-   .then (users => {
-        users.forEach(user => {
-            const friend = user.friends.filter(user => user.inviteToken === req.query.inviteToken)[0];
-            friend.remove();
-            user.save();
-        })
-    res.status(200).send("Friend request declined");
-   })
+        .then (users => modifyUser(res, req, users, friend => friend.remove(), "Friend request declined"))
 };
 
 exports.getFriendsList = (req, res, next) => {
@@ -80,12 +76,17 @@ exports.getFriendsList = (req, res, next) => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "Friends not found" });
             }
-            const friends = user.friends.filter(user => user.status === "accepted");
+            
             const friendsIds = friendsUtils.myFriends(user);
 
-            res.send({friends: friendsIds});
+            User.find({"_id": friendsIds})
+                .then(users => {
+                    const friends = _.map(users, friend => _.pick(friend, ['_id','name','surname','gender','city']));
+                    res.send(friends);
+                })
         })
-}
+    }
+
 
 exports.getPendingInvites = (req, res, next) => {
     User.findById(loggedUserId)

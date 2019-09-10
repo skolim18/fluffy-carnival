@@ -57,14 +57,7 @@ exports.deletePost = (req, res, next) => {
 };
 
 exports.patchUpdatePost = (req, res, next) => {
-    Post.findByIdAndUpdate(req.body.id, {
-        title: req.body.title,
-        description: req.body.description,
-        privacyLevel: req.body.privacyLevel,
-        publishDate: req.body.publishDate,
-        state: req.body.state,
-        tags: req.body.tags
-        })
+    Post.findByIdAndUpdate(req.query.id, {$set: req.body})
         .then (post => {
             if (!post) {
                 res.status(400).json({ success: false, msg: "Post not found" });

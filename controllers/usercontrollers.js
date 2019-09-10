@@ -55,6 +55,7 @@ exports.getActivateUser = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
             user.isVerified = true;
+            user.guid.remove();
             user.save();
             res.status(200).send("User activated");
         })
@@ -201,9 +202,7 @@ exports.patchChangePassword = (req, res, next) => {
     User.findOne({ _id: loggedUserId })
         .then(foundUser => {
             if ((foundUser.role === "User") || (foundUser.role === "Moderator")) {
-                User.findByIdAndUpdate(loggedUserId, {
-                    password: req.body.password
-                })
+                User.findById(loggedUserId)
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -213,16 +212,14 @@ exports.patchChangePassword = (req, res, next) => {
                             res.status(400).json({ success: false, msg: "Passwords don't match."})
                         }
 
-                        user.encrypt()
-                        .then(() => {
-                            user.save();
-                            res.status(201).send("Password changed");
-                        })
-                        .catch(() => res.status(400).send("Error occurred"));
+                        user.password = req.body.password;
 
-                        user.save();
-                        res.status(200).json({ success: true, msg: "Password changed" });
-                        return;
+                        user.encrypt()
+                            .then(() => {
+                                user.save();
+                                res.status(201).send("Password changed");
+                             })
+                            .catch(() => res.status(400).send("Error occurred"));
                     })
             }
         })
