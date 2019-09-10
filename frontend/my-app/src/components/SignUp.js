@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { reduxForm, Field } from 'redux-form';
 import Axios from 'axios';
-
 import CustomInput from './Customimput';
 
 class SignUp extends Component {
@@ -80,14 +79,13 @@ class SignUp extends Component {
                             <fieldset>
                                 <Field
                                     name="birthDate"
-                                    type="text"
+                                    type="date"
                                     id="birthdate"
                                     label="Birthdate"
                                     value={this.state.birthDate}
                                     onChange={event => this.handleChange(event, "birthDate")}
                                     placeholder="DD-MM-YYYY"
                                     component={CustomInput} />
-
                             </fieldset>
                             <fieldset>
                                 <label> Gender</label>
