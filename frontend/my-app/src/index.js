@@ -11,6 +11,8 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Dashboard from './components/Dashboard';
 import reducers from './reducers'
+import Resetpassword from './components/Resetpassword';
+import Resetpassword2 from './components/Resetpassword2';
 
 ReactDOM.render(
     <Provider store={createStore(reducers, {})}>
@@ -20,6 +22,8 @@ ReactDOM.render(
                 <Route exact path="/signup" component={SignUp} />
                 <Route exact path="/signin" component={SignIn} />
                 <Route exact path="/dashboard" component={Dashboard} />
+                <Route exact path="/resetpassword" component={Resetpassword} />
+                <Route exact path="/resetpassword2" component={Resetpassword2} />
             </App>
         </BrowserRouter>
     </Provider>,
