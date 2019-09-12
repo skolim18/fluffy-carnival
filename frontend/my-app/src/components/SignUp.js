@@ -48,7 +48,7 @@ class SignUp extends Component {
                                     name="email"
                                     type="text"
                                     id="email"
-                                    label="Enter your email"
+                                    label="Enter your email*"
                                     value={this.state.email}
                                     onChange={event => this.handleChange(event, "email")}
                                     placeholder="example@example.com"
@@ -59,7 +59,7 @@ class SignUp extends Component {
                                     name="name"
                                     type="text"
                                     id="name"
-                                    label="Name:"
+                                    label="Name*"
                                     value={this.state.name}
                                     onChange={event => this.handleChange(event, "name")}
                                     placeholder="ex. Adam"
@@ -70,7 +70,7 @@ class SignUp extends Component {
                                     name="surname"
                                     type="text"
                                     id="surname"
-                                    label="Surname:"
+                                    label="Surname*"
                                     value={this.state.surname}
                                     onChange={event => this.handleChange(event, "surname")}
                                     placeholder="ex. Smith"
@@ -81,14 +81,14 @@ class SignUp extends Component {
                                     name="birthDate"
                                     type="date"
                                     id="birthdate"
-                                    label="Birthdate"
+                                    label="Birthdate*"
                                     value={this.state.birthDate}
                                     onChange={event => this.handleChange(event, "birthDate")}
                                     placeholder="DD-MM-YYYY"
                                     component={CustomInput} />
                             </fieldset>
                             <fieldset>
-                                <label> Gender</label>
+                                <label> Gender*</label>
                                 <select className="form-control"
                                     onChange={event => this.handleChange(event, "gender")}
                                     defaultValue={this.state.gender}>
@@ -102,12 +102,11 @@ class SignUp extends Component {
                                     name="password"
                                     type="password"
                                     id="password"
-                                    label="Enter your password"
+                                    label="Enter your password*"
                                     value={this.state.password}
                                     onChange={event => this.handleChange(event, "password")}
                                     placeholder="yoursuperpassword"
                                     component={CustomInput} />
-
                             </fieldset>
                             <fieldset>
                                 <Field
