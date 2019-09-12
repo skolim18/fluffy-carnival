@@ -2,6 +2,7 @@ const config = require('../config');
 const uniqid = require('uniqid');
 const buildUrl = require('build-url');
 const sgMail = require('@sendgrid/mail');
+const User = require('../models/users');
 
 exports.validatePassword = pass => {
     var regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/;
@@ -83,15 +84,34 @@ exports.sendInvitiationEmail = user => {
    sgMail.send(msg);
 };
 
-exports.requestAccepted = user => {
+exports.requestAccepted = async friend => {
+
+    const requestor = await User.find({"_id": friend.requestor});
+    const requested = await User.find({"_id": friend.requested});
 
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
-        to: user.email,
+        to: requestor[0].email,
         from: 'fluffycarnival@fluffy.com',
         subject: 'New friend on Fluffy Carnival',
         text: 'You have a new friend on Fluffy Carnival',
-        html: `${user.name} ${user.surname} is your new friend`
+        html: `${requested[0].name} ${requested[0].surname} is your new friend on Fluffy Carnival!`
+    };
+    sgMail.send(msg);
+};
+
+exports.requestDeclined = async friend => {
+
+    const requestor = await User.find({"_id": friend.requestor});
+    const requested = await User.find({"_id": friend.requested});
+
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+        to: requestor[0].email,
+        from: 'fluffycarnival@fluffy.com',
+        subject: 'Invitation declined on Fluffy Carnival',
+        text: 'Your invitation has been declined',
+        html: `${requested[0].name} ${requested[0].surname} declined your invitation on Fluffy Carnival!`
     };
     sgMail.send(msg);
 };

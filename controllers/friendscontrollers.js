@@ -62,12 +62,20 @@ modifyUser = (res, req, users, modificator, status) => {
 
 exports.getAcceptInvite = (req, res, next) => {
     User.find({"friends.inviteToken": req.query.inviteToken})
-        .then (users => modifyUser(res, req, users, friend => friend.status = "accepted", "Friend request accepted"))
+        .then (users => modifyUser(res, req, users, friend => {
+            friend.status = "accepted";
+            mailUtils.requestAccepted(friend);
+        }, 
+        "Friend request accepted"))
 };
 
 exports.getDeclineInvite = (req, res, next) => {
     User.find({"friends.inviteToken": req.query.inviteToken})
-        .then (users => modifyUser(res, req, users, friend => friend.remove(), "Friend request declined"))
+        .then (users => modifyUser(res, req, users, friend => {
+            mailUtils.requestDeclined(friend);
+            friend.remove()
+        },
+            "Friend request declined"))
 };
 
 exports.getFriendsList = (req, res, next) => {

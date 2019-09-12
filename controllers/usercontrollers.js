@@ -55,7 +55,7 @@ exports.getActivateUser = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
             user.isVerified = true;
-            user.guid.remove();
+            user.guid = "";
             user.save();
             res.status(200).send("User activated");
         })
