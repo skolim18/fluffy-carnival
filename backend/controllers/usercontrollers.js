@@ -128,7 +128,7 @@ exports.putResetPassword = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "Token expired" });
                 return;
             }
-
+            res.redirect("http://localhost:3000/resetpassword2")
             user.password = req.body.password;
 
             user.encrypt()
@@ -152,7 +152,7 @@ exports.getFindCurrentUser = (req, res, next) => {
                 if (!posts) {
                     res.status(400).json({ success: false, msg: "Posts not found" });
                 }
-                const userPosts = _.map(posts, post => _.pick(post, ['title','publishDate','description','tags']));            
+                const userPosts = _.map(posts, post => _.pick(post, ['title', 'publishDate', 'description', 'tags']));
                 const currentUser = _.pick(user, ['name', 'surname']);
 
                 res.status(200).send({ user: currentUser, posts: userPosts });
@@ -168,7 +168,7 @@ exports.patchUpdateUser = (req, res, next) => {
                     res.status(400).json({ success: false, msg: "This data cannot be modified" });
                     return;
                 }
-                User.findByIdAndUpdate(loggedUserId, {$set: req.body})
+                User.findByIdAndUpdate(loggedUserId, { $set: req.body })
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -184,7 +184,7 @@ exports.patchUpdateUser = (req, res, next) => {
                     res.status(400).json({ success: false, msg: "This data cannot be modified" });
                     return;
                 }
-                User.findByIdAndUpdate(req.query.id, {$set: req.body})
+                User.findByIdAndUpdate(req.query.id, { $set: req.body })
                     .then(user => {
                         if (!user) {
                             res.status(400).json({ success: false, msg: "User not found" });
@@ -209,7 +209,7 @@ exports.patchChangePassword = (req, res, next) => {
                             return;
                         }
                         else if (req.body.validatepassword != req.body.password) {
-                            res.status(400).json({ success: false, msg: "Passwords don't match."})
+                            res.status(400).json({ success: false, msg: "Passwords don't match." })
                         }
 
                         user.password = req.body.password;
@@ -218,12 +218,12 @@ exports.patchChangePassword = (req, res, next) => {
                             .then(() => {
                                 user.save();
                                 res.status(201).send("Password changed");
-                             })
+                            })
                             .catch(() => res.status(400).send("Error occurred"));
                     })
             }
         })
-    }
+}
 
 exports.deleteUser = (req, res, next) => {
     User.findOne({ _id: loggedUserId })
@@ -253,12 +253,12 @@ exports.deleteUser = (req, res, next) => {
 
 exports.getFindUsers = (req, res, next) => {
 
-    User.find({ $and: [{ visibility: "visible" }, searchParams.userSearch(req)]})
+    User.find({ $and: [{ visibility: "visible" }, searchParams.userSearch(req)] })
         .then(users => {
             if (!users || (users.length == 0)) {
                 res.status(400).json({ success: false, msg: "Users matching criteria not found" });
             }
-            const foundUsers = _.map(users, user => _.pick(user, ['_id','name','surname','gender','city']));
+            const foundUsers = _.map(users, user => _.pick(user, ['_id', 'name', 'surname', 'gender', 'city']));
 
             res.send(foundUsers);
         })

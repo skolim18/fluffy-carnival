@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const config = require('./config');
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
+const cors = require('cors')
 
 const bodyparser = require('body-parser');
 const UserRoutes = require('./routers/users');
@@ -11,9 +12,11 @@ const FriendsRoutes = require('./routers/friends');
 const User = require('./models/users');
 const Post = require('./models/posts');
 
+
 const app = express();
 app.use(bodyparser.json());
 app.use(passport.initialize());
+app.use(cors())
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
@@ -51,7 +54,7 @@ mongoose
             role: "Admin",
             name: "Admin",
             surname: "Adminadmin",
-            gender: "other",
+            gender: "Other",
             birthDate: 1970 - 01 - 01
 
         }).then((User) =>

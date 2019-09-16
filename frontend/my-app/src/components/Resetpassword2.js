@@ -1,12 +1,27 @@
 import React, { Component } from 'react';
 import { reduxForm, Field } from 'redux-form';
+import Axios from 'axios';
 
 import CustomInput from './Customimput';
 
 class ResetPassword2 extends Component {
 
-    onSubmit(formData) {
-        console.log('formData', formData)
+    state = {
+        password: "",
+        expirationTokenDate: ""
+    }
+
+    onSubmit = () => {
+        Axios.put("http://localhost:9090/user/reset", {
+            password: this.state.password
+        })
+            .then(data => {
+                console.log(data)
+            });
+    }
+
+    handleChange = (event, fillName) => {
+        this.setState({ [fillName]: event.target.value });
     }
 
     render() {
@@ -22,6 +37,8 @@ class ResetPassword2 extends Component {
                                     name="password"
                                     type="password"
                                     id="password"
+                                    value={this.state.email}
+                                    onChange={event => this.handleChange(event, "password")}
                                     placeholder="Your new password"
                                     component={CustomInput} />
 

@@ -34,9 +34,9 @@ exports.sendActivationEmail = user => {
 exports.sendResetPasswordEmail = user => {
     user.resetPasswordToken = uniqid();
     user.expirationTokenDate = Date.now();
-    user.expirationTokenDate = user.expirationTokenDate.getTime() + 5*60*1000;
+    user.expirationTokenDate = user.expirationTokenDate.getTime() + 5 * 60 * 1000;
 
-    const generatedURL = buildUrl('http://localhost:9090', {
+    const generatedURL = buildUrl('http://localhost:9090/', {
         path: 'user/reset',
         queryParams: {
             token: user.resetPasswordToken
@@ -57,7 +57,7 @@ exports.sendResetPasswordEmail = user => {
 
 exports.sendInvitiationEmail = user => {
     inviteToken = uniqid();
-    
+
     const generatedURLaccept = buildUrl('http://localhost:9090', {
         path: 'friends/accept',
         queryParams: {
@@ -65,7 +65,7 @@ exports.sendInvitiationEmail = user => {
         }
     });
 
-    const generatedURLdecline= buildUrl('http://localhost:9090', {
+    const generatedURLdecline = buildUrl('http://localhost:9090', {
         path: 'friends/decline',
         queryParams: {
             inviteToken: inviteToken
@@ -73,21 +73,21 @@ exports.sendInvitiationEmail = user => {
     });
 
 
-   sgMail.setApiKey(config.SENDGRID_API_KEY);
-   const msg = {
-       to: user.email,
-       from: 'fluffycarnival@fluffy.com',
-       subject: 'Friend request on Fluffy Carnival',
-       text: 'Click to accept invitiation',
-       html: `<a href="${generatedURLaccept}">Click</a> to accept invitiation. <a href="${generatedURLdecline}">Click</a> to decline invitiation. `
-   };
-   sgMail.send(msg);
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+        to: user.email,
+        from: 'fluffycarnival@fluffy.com',
+        subject: 'Friend request on Fluffy Carnival',
+        text: 'Click to accept invitiation',
+        html: `<a href="${generatedURLaccept}">Click</a> to accept invitiation. <a href="${generatedURLdecline}">Click</a> to decline invitiation. `
+    };
+    sgMail.send(msg);
 };
 
 exports.requestAccepted = async friend => {
 
-    const requestor = await User.find({"_id": friend.requestor});
-    const requested = await User.find({"_id": friend.requested});
+    const requestor = await User.find({ "_id": friend.requestor });
+    const requested = await User.find({ "_id": friend.requested });
 
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
@@ -102,8 +102,8 @@ exports.requestAccepted = async friend => {
 
 exports.requestDeclined = async friend => {
 
-    const requestor = await User.find({"_id": friend.requestor});
-    const requested = await User.find({"_id": friend.requested});
+    const requestor = await User.find({ "_id": friend.requestor });
+    const requested = await User.find({ "_id": friend.requested });
 
     sgMail.setApiKey(config.SENDGRID_API_KEY);
     const msg = {
