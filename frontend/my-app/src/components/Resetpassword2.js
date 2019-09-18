@@ -7,12 +7,11 @@ import CustomInput from './Customimput';
 class ResetPassword2 extends Component {
 
     state = {
-        password: "",
-        expirationTokenDate: ""
+        password: ""
     }
 
     onSubmit = () => {
-        Axios.put("http://localhost:9090/user/reset", {
+        Axios.put("http://localhost:9090/user/reset?token=1hkwva64k0p0xbdf", {
             password: this.state.password
         })
             .then(data => {
@@ -37,7 +36,7 @@ class ResetPassword2 extends Component {
                                     name="password"
                                     type="password"
                                     id="password"
-                                    value={this.state.email}
+                                    value={this.state.password}
                                     onChange={event => this.handleChange(event, "password")}
                                     placeholder="Your new password"
                                     component={CustomInput} />

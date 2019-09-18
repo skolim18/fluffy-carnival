@@ -87,6 +87,7 @@ exports.postAuthenticateUser = (req, res, next) => {
                         res.status(401).json({ auth: false, token: null, msg: "Incorrect password" })
                     }
                 })
+            res.redirect("http://localhost:3000/dashboard");
         })
 };
 
@@ -100,7 +101,7 @@ exports.getResetPassword = (req, res, next) => {
             if (!user) {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
-            res.status(200).send("Please copy url and paste it to Postman");
+            res.redirect(`http://localhost:3000/resetpassword2?token=${req.query.token}`);
         })
 };
 
@@ -124,11 +125,10 @@ exports.putResetPassword = (req, res, next) => {
                 res.status(400).json({ success: false, msg: "User not found" });
             }
 
-            if (user.expirationTokenDate < Date.now()) {
-                res.status(400).json({ success: false, msg: "Token expired" });
-                return;
-            }
-            res.redirect("http://localhost:3000/resetpassword2")
+            // if (user.expirationTokenDate < Date.now()) {
+            //     res.status(400).json({ success: false, msg: "Token expired" });
+            //     return;
+            // }
             user.password = req.body.password;
 
             user.encrypt()

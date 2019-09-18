@@ -1,10 +1,9 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { PrivateRoute } from 'react-private-route'
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-
+import PrivateRoute from './components/Private';
 import Home from './components/Home';
 import Header from './components/Header';
 import SignUp from './components/SignUp';
@@ -34,7 +33,7 @@ export default class App extends React.Component {
                         <Route exact path="/" component={Home} />
                         <Route path="/signup" component={SignUp} />
                         <Route path="/signin" component={SignIn} />
-                        <Route path="/dashboard" component={Dashboard} />
+                        <PrivateRoute exact path="/dashboard" component={Dashboard} />
                         <Route path="/resetpassword" component={Resetpassword} />
                         <Route path="/resetpassword2" component={Resetpassword2} />
                         <Route path="/logged" component={Logged} />

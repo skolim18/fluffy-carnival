@@ -9,7 +9,7 @@ class SignUp extends Component {
         password: '',
         name: '',
         surname: '',
-        gender: 'Other',
+        gender: 'other',
         country: '',
         city: '',
         birthDate: ''
@@ -92,9 +92,9 @@ class SignUp extends Component {
                                 <select className="form-control"
                                     onChange={event => this.handleChange(event, "gender")}
                                     defaultValue={this.state.gender}>
-                                    <option value="Female">Female</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Other">Other</option>
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </fieldset>
                             <fieldset>
