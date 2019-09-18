@@ -13,7 +13,7 @@ import reducers from './reducers/index'
 import Resetpassword from './components/Resetpassword';
 import Resetpassword2 from './components/Resetpassword2';
 import Logged from './components/Logged';
-
+import Useractivated from './components/UserActivated';
 
 
 
@@ -37,6 +37,7 @@ export default class App extends React.Component {
                         <Route path="/resetpassword" component={Resetpassword} />
                         <Route path="/resetpassword2" component={Resetpassword2} />
                         <Route path="/logged" component={Logged} />
+                        <Route path="/useractivated" component={Useractivated} />
                     </Switch>
                 </Provider>,
         </div >

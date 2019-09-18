@@ -57,7 +57,7 @@ exports.getActivateUser = (req, res, next) => {
             user.isVerified = true;
             user.guid = "";
             user.save();
-            res.status(200).send("User activated");
+            res.redirect(`http://localhost:3000/useractivated`);
         })
 };
 
@@ -87,7 +87,6 @@ exports.postAuthenticateUser = (req, res, next) => {
                         res.status(401).json({ auth: false, token: null, msg: "Incorrect password" })
                     }
                 })
-            res.redirect("http://localhost:3000/dashboard");
         })
 };
 
