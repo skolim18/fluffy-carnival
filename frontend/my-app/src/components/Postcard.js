@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Image from './dogg.jpeg'
 
 export default class Postcard extends Component {
     render() {
