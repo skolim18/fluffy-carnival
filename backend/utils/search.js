@@ -11,6 +11,15 @@ exports.userSearch = (req) => {
 };
 
 exports.postSearch = async (req) => {
+    if (req.query.privacy == "all") {
+        const user = await User.findById(loggedUserId);
+        const friendsIds = friendsUtils.myFriends(user);
+        let posts = await Post.find({$or: 
+        [{$and: [{authorId: friendsIds},{state: "published"},{privacyLevel: "friendsOnly"}]}, 
+        {$and: [{authorId: loggedUserId},{state: "published"},{privacyLevel: "private"}]}, 
+        {$and: [{privacyLevel: "public"},{state: "published"}]}]});
+        return posts;
+    }
     if (req.query.privacy == "public") {
        let posts = await Post.find({$and: [{privacyLevel: "public"},{state: "published"},{$or: [{title: {$regex: req.query.search}},{description: {$regex: req.query.search}}]}]});
        return posts;

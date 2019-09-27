@@ -15,7 +15,6 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Resetpassword from './components/Resetpassword';
 import Resetpassword2 from './components/Resetpassword2';
-import Logged from './components/Logged';
 import Useractivated from './components/UserActivated';
 import UserCreated from './components/UserCreated';
 
@@ -42,6 +41,11 @@ class App extends Component {
                   <div className="container">
                     <Route exact path="/register" component={ Register } />
                     <Route exact path="/login" component={ Login } />
+                    <Route path="/useractivated" component={Useractivated} />
+                    <Route path="/usercreated" component={UserCreated} />
+                    <Route path="/resetpassword" component={Resetpassword} />
+                    <Route path="/resetpassword2" component={Resetpassword2} />
+                    <Route path="/dashboard" component={Dashboard} />
                   </div>
               </div>
             </Router>
@@ -50,35 +54,4 @@ class App extends Component {
     }
   }
   
-  export default App;
-
-
-// export default class App extends React.Component {
-
-//     State = {
-//         isLoggedIn: false
-//     }
-
-//     render() {
-
-//         return (
-//             <div>
-//                 <Header />
-//                 <Provider store = { store }>>
-//                     <Switch>
-//                         <Route exact path="/" component={Home} />
-//                         <Route path="/register" component={ Register } />
-//                         <Route path="/login" component={Login} />
-//                         <PrivateRoute exact path="/dashboard" component={Dashboard} />
-//                         <Route path="/resetpassword" component={Resetpassword} />
-//                         <Route path="/resetpassword2" component={Resetpassword2} />
-//                         <Route path="/logged" component={Logged} />
-//                         <Route path="/useractivated" component={Useractivated} />
-//                         <Route path="/usercreated" component={UserCreated} />
-//                     </Switch>
-//                 </Provider>
-//         </div >
-//         )
-
-//     }
-// }
+export default App;

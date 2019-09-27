@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUser } from '../actions/authentication';
 import classnames from 'classnames';
+import { Link } from 'react-router-dom';
 
 class Login extends Component {
 
@@ -10,7 +11,7 @@ class Login extends Component {
         super();
         this.state = {
             email: '',
-            password: '',
+            password: ''
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,11 +41,6 @@ class Login extends Component {
     componentWillReceiveProps(nextProps) {
         if(nextProps.auth.isAuthenticated) {
             this.props.history.push('/')
-        }
-        if(nextProps.errors) {
-            this.setState({
-                errors: nextProps.errors
-            });
         }
     }
 
@@ -78,6 +74,9 @@ class Login extends Component {
                         Login User
                     </button>
                 </div>
+                <div className="form-group">
+                    <Link to="/resetpassword">Forgot your password?</Link>
+                </div>
             </form>
         </div>
         )
@@ -86,13 +85,11 @@ class Login extends Component {
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
-    auth: state.auth,
-    errors: state.errors
+    auth: state.auth
 })
 
 export  default connect(mapStateToProps, { loginUser })(Login)

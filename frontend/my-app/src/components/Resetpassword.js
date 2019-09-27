@@ -28,7 +28,7 @@ class ResetPassword extends Component {
         return (
             <div className='container-fluid'>
                 <div className="row justify-content-center">
-                    <div class="col-md-3 text-center">
+                    <div className="col-md-3 text-center">
                         <form onSubmit={handleSubmit(this.onSubmit)}>
                             <h1>Please enter your email</h1>
                             <fieldset>

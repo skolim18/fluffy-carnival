@@ -159,8 +159,7 @@ Register.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth,
-    errors: state.errors
+    auth: state.auth
 });
 
 export default connect(mapStateToProps,{ registerUser })(withRouter(Register));
